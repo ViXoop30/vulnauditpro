@@ -1,0 +1,5 @@
+{
+  "name": "VulnAudit Pro",
+  "description": "A high-level technical audit platform that transforms raw security scan data (Nuclei, Nmap, Logs) into professional security reports using the Gemini 3 API.",
+  "requestFramePermissions": []
+}

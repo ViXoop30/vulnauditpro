@@ -1,0 +1,17 @@
+
+# Configuración de Mime Types para archivos de React/TypeScript
+<IfModule mod_mime.c>
+    AddType application/javascript .ts
+    AddType application/javascript .tsx
+</IfModule>
+
+# Evitar que el navegador bloquee la ejecución de los scripts
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Redirección básica (Opcional, permite recargar rutas de React)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
