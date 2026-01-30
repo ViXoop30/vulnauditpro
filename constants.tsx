@@ -32,10 +32,10 @@ Debes responder exclusivamente en formato JSON estructurado siguiendo exactament
 }`;
 
 export const SAMPLE_DATA = {
-  url: "https://elreydelchurrascon.cl/",
-  logs: `[2024-06-01] [nuclei] [wordpress-detect] https://elreydelchurrascon.cl/ (Version 6.0.1 - Outdated)
-[2024-06-01] [nuclei] [wp-directory-listing] https://elreydelchurrascon.cl/wp-content/uploads/ (200 OK)
-[2024-06-01] [nuclei] [xmlrpc-bruteforce] https://elreydelchurrascon.cl/xmlrpc.php (Vulnerable to multicall)
+  url: "https://example-target.com/",
+  logs: `[2024-06-01] [nuclei] [wordpress-detect] https://example-target.com/ (Version 6.0.1 - Outdated)
+[2024-06-01] [nuclei] [wp-directory-listing] https://example-target.com/wp-content/uploads/ (200 OK)
+[2024-06-01] [nuclei] [xmlrpc-bruteforce] https://example-target.com/xmlrpc.php (Vulnerable to multicall)
 [2024-06-01] [nmap] Port 3306 (MySQL) open to 0.0.0.0/0. Banner: 5.7.42-log
 [2024-06-01] [http-header] Missing HSTS, Content-Security-Policy and X-Frame-Options.`
 };
@@ -51,7 +51,7 @@ export const MOCK_REPORT: VulnerabilityReport = {
       tipo: "WordPress Desactualizado",
       severidad: "Alta",
       cwe_id: "CWE-1104",
-      endpoint_afectado: "https://elreydelchurrascon.cl/",
+      endpoint_afectado: "https://example-target.com/",
       descripcion: "Se detectó WordPress 6.0.1 en ejecución, una versión obsoleta con vulnerabilidades conocidas de XSS y escalada de privilegios.",
       poc_payload: "Version: 6.0.1 (CVE-2022-21664, CVE-2022-21663)",
       remediacion_tecnica: {
@@ -64,7 +64,7 @@ export const MOCK_REPORT: VulnerabilityReport = {
       tipo: "Directory Listing Habilitado",
       severidad: "Media",
       cwe_id: "CWE-548",
-      endpoint_afectado: "https://elreydelchurrascon.cl/wp-content/uploads/",
+      endpoint_afectado: "https://example-target.com/wp-content/uploads/",
       descripcion: "El directorio de uploads permite listar archivos, exponiendo potencialmente información sensible o archivos de respaldo.",
       poc_payload: "GET /wp-content/uploads/ HTTP/1.1\nResponse: 200 OK (Index of /wp-content/uploads/)",
       remediacion_tecnica: {
@@ -77,7 +77,7 @@ export const MOCK_REPORT: VulnerabilityReport = {
       tipo: "XML-RPC Brute Force Vulnerable",
       severidad: "Crítica",
       cwe_id: "CWE-307",
-      endpoint_afectado: "https://elreydelchurrascon.cl/xmlrpc.php",
+      endpoint_afectado: "https://example-target.com/xmlrpc.php",
       descripcion: "El endpoint XML-RPC permite ataques de fuerza bruta amplificados mediante system.multicall, permitiendo probar múltiples credenciales en una sola petición.",
       poc_payload: `POST /xmlrpc.php HTTP/1.1
 Content-Type: text/xml
@@ -129,9 +129,9 @@ iptables -A INPUT -p tcp --dport 3306 -j DROP`
       tipo: "Headers de Seguridad Faltantes",
       severidad: "Media",
       cwe_id: "CWE-693",
-      endpoint_afectado: "https://elreydelchurrascon.cl/",
+      endpoint_afectado: "https://example-target.com/",
       descripcion: "Ausencia de headers HTTP de seguridad críticos: HSTS, Content-Security-Policy, X-Frame-Options. Esto expone a ataques de clickjacking, MITM y XSS.",
-      poc_payload: "curl -I https://elreydelchurrascon.cl/\n\nMissing:\n- Strict-Transport-Security\n- Content-Security-Policy\n- X-Frame-Options",
+      poc_payload: "curl -I https://example-target.com/\n\nMissing:\n- Strict-Transport-Security\n- Content-Security-Policy\n- X-Frame-Options",
       remediacion_tecnica: {
         explicacion: "Implementar headers de seguridad mediante configuración del servidor web (Apache/Nginx) o a nivel de aplicación.",
         codigo_vulnerable: "# Sin headers de seguridad",
