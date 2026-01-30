@@ -12,6 +12,11 @@
 
 # Redirección básica (Opcional, permite recargar rutas de React)
 RewriteEngine On
+
+# Proxy Rewrite Rules
+RewriteRule ^groq-api/(.*)$ proxy.php [L,QSA]
+RewriteRule ^openai-api/(.*)$ proxy.php [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
