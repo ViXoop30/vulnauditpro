@@ -4,7 +4,12 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-$db_config = ["host" => "localhost", "user" => "root", "pass" => "", "name" => "vuln_db"];
+$db_config = [
+    "host" => getenv('DB_HOST') ?: "localhost",
+    "user" => getenv('DB_USER') ?: "root",
+    "pass" => getenv('DB_PASS') ?: "",
+    "name" => getenv('DB_NAME') ?: "vuln_db"
+];
 $conn = new mysqli($db_config['host'], $db_config['user'], $db_config['pass'], $db_config['name']);
 
 if ($conn->connect_error) die(json_encode(["error" => "DB Fail"]));
