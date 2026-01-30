@@ -105,12 +105,12 @@ const App: React.FC = () => {
           <h1 className="font-black italic text-xl tracking-tighter uppercase">VulnAudit_Pro</h1>
         </div>
         <div className="flex items-center gap-4">
-          <button
+          {/* <button
             onClick={() => setShowPaymentModal(true)}
             className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-600 px-4 py-1.5 rounded-full uppercase tracking-tighter hover:scale-105 transition-transform"
           >
             ⭐ Upgrade to Enterprise
-          </button>
+          </button> */}
           <div className="h-6 w-[1px] bg-white/10 mx-2" />
           <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">
             SYSTEM_ACTIVE
@@ -151,7 +151,7 @@ const App: React.FC = () => {
                     >
                       🇨🇱 LOCAL_NODE
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => {
                         alert("⚠️ CARACTERÍSTICA ENTERPRISE\n\nEl escaneo desde USA requiere una suscripción activa.");
                         setShowPaymentModal(true);
@@ -159,7 +159,7 @@ const App: React.FC = () => {
                       className={`px-3 py-1 text-[9px] font-black rounded-lg transition-all ${scanLocation === 'USA' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
                     >
                       🇺🇸 USA_NODE (PRO)
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 
@@ -303,11 +303,11 @@ const App: React.FC = () => {
         </p>
       </footer>
 
-      <PaymentModal
+      {/* <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         onSuccess={() => setIsPremium(true)}
-      />
+      /> */}
     </div>
   );
 };
