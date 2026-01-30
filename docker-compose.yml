@@ -7,8 +7,9 @@ services:
     ports:
       - "8083:80"
     restart: always
-    depends_on:
-      - backend
+    networks:
+      - default
+      - red_interna_apps
 
   # PHP-FPM (Backend)
   backend:
@@ -26,6 +27,9 @@ services:
       - db
     # Install mysqli extension
     command: /bin/sh -c "docker-php-ext-install mysqli && php-fpm"
+    networks:
+      - default
+      - red_interna_apps
 
   # MySQL (Database)
   db:
@@ -38,6 +42,13 @@ services:
       - db_data:/var/lib/mysql
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     platform: linux/amd64
+    networks:
+      - default
 
 volumes:
   db_data:
+
+
+networks:
+  red_interna_apps:
+    external: true
