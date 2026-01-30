@@ -4,7 +4,7 @@ import { VulnerabilityReport } from "../types.ts";
 import { SYSTEM_INSTRUCTION, MOCK_REPORT } from "../constants.tsx";
 
 export const analyzeVulnerabilities = async (rawData: string, targetUrl: string): Promise<VulnerabilityReport> => {
-  const apiKey = (window as any).process?.env?.API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   // Check if API key is valid
   if (!apiKey || apiKey.trim() === "" || apiKey.includes("TU_API_KEY") || apiKey.includes("PLACEHOLDER") || apiKey.includes("YOUR_VALID_API_KEY_HERE")) {
@@ -21,7 +21,7 @@ export const analyzeVulnerabilities = async (rawData: string, targetUrl: string)
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-1.5-flash-latest",
       contents: `URL OBJETIVO: ${targetUrl}\n\nTELEMETRÍA BRUTA:\n${rawData}`,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

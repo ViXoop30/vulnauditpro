@@ -2,34 +2,26 @@
 import React, { useState, useEffect } from 'react';
 import { Icons, SAMPLE_DATA } from './constants.tsx'; // .tsx agregado
 import { VulnerabilityReport, User } from './types.ts'; // .ts agregado
-import { analyzeVulnerabilities } from './services/openaiService.ts';
+import { analyzeVulnerabilities } from './services/groqService.ts';
 import { VulnerabilityDetails } from './components/VulnerabilityDetails.tsx'; // .tsx agregado
 import { ReportDashboard } from './components/ReportDashboard.tsx'; // .tsx agregado
+import { PaymentModal } from './components/PaymentModal.tsx'; // .tsx agregado
+import { TacticalTerminal } from './components/TacticalTerminal.tsx'; // .tsx agregado
 
-const MASTER_USER = "ADMIN_PRO";
-const MASTER_KEY = "VULN-PRO-2025-SECURE-KEY-99";
 const API_URL = "api.php";
 
 const App: React.FC = () => {
-  // Auto-login: Skip authentication screen
-  const [currentUser, setCurrentUser] = useState<any>({ id: '1', username: MASTER_USER, role: 'admin', status: 'active' });
-  const [loginForm, setLoginForm] = useState({ user: '', pass: '' });
+  const [currentUser] = useState({ id: '1', username: 'AUDITOR_PRO', role: 'admin', status: 'active' });
   const [targetUrl, setTargetUrl] = useState(SAMPLE_DATA.url);
   const [inputData, setInputData] = useState(SAMPLE_DATA.logs);
   const [report, setReport] = useState<VulnerabilityReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loginForm.user === MASTER_USER && loginForm.pass === MASTER_KEY) {
-      setCurrentUser({ id: '1', username: MASTER_USER, role: 'admin', status: 'active' });
-      setError(null);
-    } else {
-      setError("ACCESO DENEGADO: Credenciales maestras inválidas.");
-    }
-  };
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [scanLocation, setScanLocation] = useState('LOCAL');
+  const [workMode, setWorkMode] = useState<'MANUAL' | 'AI'>('MANUAL');
+  const [isPremium, setIsPremium] = useState(false);
 
   const handleProcess = async () => {
     if (!inputData.trim()) return setError("TELEMETRÍA REQUERIDA.");
@@ -105,65 +97,141 @@ const App: React.FC = () => {
     setShowExportMenu(false);
   };
 
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
-        <form onSubmit={handleLogin} className="w-full max-w-md bg-slate-900 p-8 rounded-[2rem] border border-white/5 space-y-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-black text-white italic flex items-center justify-center gap-2">
-              <Icons.Lock /> VULN_AUDIT PRO
-            </h1>
-            <p className="text-slate-500 text-[10px] uppercase font-mono tracking-widest mt-2">XAMPP Local Node</p>
-          </div>
-          <div className="space-y-4">
-            <input type="text" placeholder="USUARIO MAESTRO" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-indigo-400 focus:outline-none focus:border-indigo-500" value={loginForm.user} onChange={e => setLoginForm({ ...loginForm, user: e.target.value })} />
-            <input type="password" placeholder="LLAVE DE ACCESO" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-indigo-400 focus:outline-none focus:border-indigo-500" value={loginForm.pass} onChange={e => setLoginForm({ ...loginForm, pass: e.target.value })} />
-          </div>
-          {error && <p className="text-red-500 text-[10px] text-center font-bold">{error}</p>}
-          <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl uppercase tracking-widest text-xs transition-colors">Entrar al Sistema</button>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
       <header className="p-4 border-b border-white/5 flex justify-between items-center bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-2">
           <Icons.Shield />
-          <h1 className="font-black italic text-xl tracking-tighter">VULN_AUDIT</h1>
+          <h1 className="font-black italic text-xl tracking-tighter uppercase">VulnAudit_Pro</h1>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">ONLINE: {currentUser.username}</span>
-          <button onClick={() => setCurrentUser(null)} className="text-[10px] text-red-500 font-bold uppercase hover:underline">Cerrar Sesión</button>
+          <button
+            onClick={() => setShowPaymentModal(true)}
+            className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-600 px-4 py-1.5 rounded-full uppercase tracking-tighter hover:scale-105 transition-transform"
+          >
+            ⭐ Upgrade to Enterprise
+          </button>
+          <div className="h-6 w-[1px] bg-white/10 mx-2" />
+          <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">
+            SYSTEM_ACTIVE
+          </span>
         </div>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         {!report ? (
-          <div className="max-w-4xl mx-auto space-y-6 animate-in">
-            <div className="bg-slate-900/50 p-6 rounded-3xl border border-white/5 space-y-4">
-              <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Configuración de Auditoría</h2>
-              <input type="text" placeholder="URL del Objetivo (ej: https://empresa.com)" className="w-full bg-slate-950 border border-white/10 p-4 rounded-xl text-indigo-400 focus:outline-none focus:border-indigo-500 font-mono" value={targetUrl} onChange={e => setTargetUrl(e.target.value)} />
-              <textarea placeholder="Pega aquí los logs de Nmap, Nuclei o JSON de vulnerabilidades..." className="w-full h-80 bg-slate-950 border border-white/10 p-4 rounded-xl text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500" value={inputData} onChange={e => setInputData(e.target.value)} />
-              <button onClick={handleProcess} disabled={isLoading} className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black text-lg transition-all transform active:scale-[0.98]">
-                {isLoading ? "PROCESANDO TELEMETRÍA CON IA..." : "GENERAR INFORME TÉCNICO"}
-              </button>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in">
+            {/* Input Section */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-slate-900/50 p-8 rounded-[2.5rem] border border-white/5 space-y-6 shadow-2xl">
+                <div className="flex justify-between items-center">
+                  <div className="flex gap-4 items-center">
+                    <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                      Auditoría Táctica
+                    </h2>
+                    <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                      <button
+                        onClick={() => setWorkMode('MANUAL')}
+                        className={`px-4 py-1.5 text-[10px] font-black rounded-lg transition-all flex items-center gap-2 ${workMode === 'MANUAL' ? 'bg-slate-800 text-white border border-white/10 shadow-lg shadow-black/50' : 'text-slate-500 hover:text-slate-300'}`}
+                      >
+                        <Icons.Code /> MODO_MANUAL
+                      </button>
+                      <button
+                        onClick={() => setWorkMode('AI')}
+                        className={`px-4 py-1.5 text-[10px] font-black rounded-lg transition-all flex items-center gap-2 ${workMode === 'AI' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500 hover:text-slate-300'}`}
+                      >
+                        {isPremium ? <Icons.Shield /> : '💎'} MODO_AI_PRO
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 bg-slate-950 p-1 rounded-xl border border-white/5">
+                    <button
+                      onClick={() => setScanLocation('LOCAL')}
+                      className={`px-3 py-1 text-[9px] font-black rounded-lg transition-all ${scanLocation === 'LOCAL' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      🇨🇱 LOCAL_NODE
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert("⚠️ CARACTERÍSTICA ENTERPRISE\n\nEl escaneo desde USA requiere una suscripción activa.");
+                        setShowPaymentModal(true);
+                      }}
+                      className={`px-3 py-1 text-[9px] font-black rounded-lg transition-all ${scanLocation === 'USA' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      🇺🇸 USA_NODE (PRO)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-indigo-500/50 group-focus-within:text-indigo-400">
+                      <span className="text-xs font-mono">TARGET_URL://</span>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="empresa.com"
+                      className="w-full bg-slate-950 border border-white/10 p-4 pl-24 rounded-2xl text-indigo-400 focus:outline-none focus:border-indigo-500/50 font-mono text-sm transition-all"
+                      value={targetUrl}
+                      onChange={e => setTargetUrl(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <button onClick={() => setInputData('')} className="text-[9px] font-black text-slate-600 hover:text-red-400 uppercase tracking-widest">Clear</button>
+                    </div>
+                    <textarea
+                      placeholder="Pega aquí logs de Nmap, Nuclei, Nikto o telemetría bruta..."
+                      className="w-full h-96 bg-slate-950 border border-white/10 p-6 rounded-3xl text-[11px] font-mono text-indigo-300/80 focus:outline-none focus:border-indigo-500/50 resize-none custom-scrollbar"
+                      value={inputData}
+                      onChange={e => setInputData(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleProcess}
+                  disabled={isLoading}
+                  className={`w-full py-6 rounded-2xl font-black text-xl transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 ${isLoading ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-xl shadow-indigo-500/20 hover:from-indigo-500 hover:to-indigo-400'}`}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                      ANALIZANDO INFRAESTRUCTURA...
+                    </>
+                  ) : (
+                    <>
+                      <Icons.Shield /> GENERAR INFORME TÉCNICO
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="text-center">
+                <button onClick={() => { setInputData(SAMPLE_DATA.logs); setTargetUrl(SAMPLE_DATA.url); }} className="text-[10px] text-slate-500 font-black uppercase hover:text-indigo-400 transition-colors tracking-widest flex items-center justify-center gap-2 mx-auto">
+                  🔄 Recargar Datos de Ejemplo
+                </button>
+              </div>
             </div>
-            <div className="text-center">
-              <button onClick={() => { setInputData(SAMPLE_DATA.logs); setTargetUrl(SAMPLE_DATA.url); }} className="text-sm text-indigo-400 font-bold uppercase hover:text-indigo-300 bg-indigo-500/10 px-6 py-2 rounded-lg border border-indigo-500/30 hover:border-indigo-400">🔄 Recargar Datos de Ejemplo</button>
+
+            {/* Tactical Sidebar */}
+            <div className="lg:col-span-1">
+              <TacticalTerminal targetUrl={targetUrl} />
             </div>
           </div>
         ) : (
-          <div className="space-y-8 animate-in">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="space-y-8 animate-in slide-in-from-bottom duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/30 p-8 rounded-[3rem] border border-white/5 backdrop-blur-sm">
               <div>
-                <h2 className="text-3xl font-black italic text-white">{targetUrl || "Análisis de Red"}</h2>
-                <p className="text-slate-500 text-xs font-mono uppercase">Auditoría generada por Gemini AI</p>
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <h2 className="text-3xl font-black italic text-white tracking-tighter">{targetUrl || "AUDITORÍA_GENERAL"}</h2>
+                </div>
+                <p className="text-slate-500 text-[10px] font-mono uppercase tracking-widest">AI_ANALYSIS_COMPLETED • ENGINE: GROQ_LLAMA3_70B</p>
               </div>
               <div className="flex gap-3">
-                <button onClick={saveToDatabase} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-xl text-xs font-bold uppercase transition-colors">
-                  <Icons.Save /> Guardar en MySQL
+                <button onClick={saveToDatabase} className="flex items-center gap-3 bg-slate-800 hover:bg-slate-700 px-6 py-4 rounded-2xl text-[10px] font-black uppercase transition-all hover:translate-y-[-2px] active:translate-y-0 border border-white/5">
+                  <Icons.Save /> Guardar
                 </button>
                 <div className="relative">
                   <button
@@ -219,7 +287,7 @@ const App: React.FC = () => {
               <h3 className="text-xl font-bold italic flex items-center gap-2">
                 <Icons.FileText /> Detalle de Hallazgos
               </h3>
-              {report.vulnerabilidades.map((v, i) => <VulnerabilityDetails key={i} vuln={v} />)}
+              {report.vulnerabilidades?.map((v, i) => <VulnerabilityDetails key={i} vuln={v} />)}
             </div>
 
             <button onClick={() => setReport(null)} className="w-full py-8 text-slate-500 hover:text-white uppercase text-[10px] tracking-widest transition-all">
@@ -234,6 +302,12 @@ const App: React.FC = () => {
           VulnAudit Pro v2.5 • Senior Pentesting Tool • XAMPP Build 2025
         </p>
       </footer>
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccess={() => setIsPremium(true)}
+      />
     </div>
   );
 };

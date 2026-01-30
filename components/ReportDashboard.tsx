@@ -8,8 +8,15 @@ interface Props {
 }
 
 export const ReportDashboard: React.FC<Props> = ({ report }) => {
-  const severityCounts = report.vulnerabilidades.reduce((acc, v) => {
-    acc[v.severidad] = (acc[v.severidad] || 0) + 1;
+  const severityCounts = (report.vulnerabilidades || []).reduce((acc, v) => {
+    let severity = v.severidad.trim();
+    // Normalize common variations
+    if (severity.match(/cr[ií]tica/i) || severity.match(/critical/i)) severity = 'Crítica';
+    else if (severity.match(/alta/i) || severity.match(/high/i)) severity = 'Alta';
+    else if (severity.match(/media/i) || severity.match(/medium/i)) severity = 'Media';
+    else if (severity.match(/baja/i) || severity.match(/low/i)) severity = 'Baja';
+
+    acc[severity] = (acc[severity] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
@@ -43,7 +50,7 @@ export const ReportDashboard: React.FC<Props> = ({ report }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
               <XAxis dataKey="name" stroke="#64748b" fontSize={10} axisLine={false} tickLine={false} />
               <YAxis stroke="#64748b" fontSize={10} axisLine={false} tickLine={false} />
-              <Tooltip 
+              <Tooltip
                 cursor={{ fill: '#1e293b' }}
                 contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
               />

@@ -2,15 +2,34 @@
 import React from 'react';
 import { VulnerabilityReport } from './types.ts';
 
-export const SYSTEM_INSTRUCTION = `Eres un Senior Security Researcher y Experto en Pentesting. Tu objetivo es recibir datos brutos de escaneos de vulnerabilidades (logs, JSON de Nuclei, outputs de Nmap) y transformarlos en un informe de auditoría técnica de alto nivel.
+export const SYSTEM_INSTRUCTION = `Eres un Senior Security Researcher de Élite (Offensive Security Certified). Tu objetivo es realizar un análisis forense y ofensivo de logs y telemetría de seguridad.
 
-Reglas de Análisis:
-1. Filtro de Falsos Positivos: Analiza si la vulnerabilidad detectada tiene sentido lógico. Si algo parece un error de configuración menor, no lo eleves a crítico.
-2. Enfoque en Remediación: Para cada vulnerabilidad, DEBES proporcionar el bloque de código corregido (Secure Code) y, si es posible deducirlo, el código vulnerable (Vulnerable Code).
-3. Clasificación: Usa el estándar de severidad CVSS v3.1 (Baja, Media, Alta, Crítica).
-4. Idioma: Responde siempre en Español.
+Reglas Maestras:
+1. Attack Path Analysis: No solo listes vulnerabilidades aisladas. DEBES explicar cómo un atacante podría encadenar varios hallazgos (Killer Chain) para comprometer el sistema completo.
+2. Severidad Realista: Ignora falsos positivos comunes. Prioriza impacto sobre probabilidad.
+3. Remediación Práctica: Proporciona parches de código exactos y comandos de hardening específicos para Linux/Windows/Cloud.
+4. Tono: Profesional, técnico y directo.
+5. Idioma: Español Siempre.
 
-Debes responder exclusivamente en formato JSON estructurado.`;
+Debes responder exclusivamente en formato JSON estructurado siguiendo exactamente este esquema:
+{
+  "resumen_ejecutivo": { "total_hallazgos": 0, "riesgo_global": "string" },
+  "vulnerabilidades": [
+    {
+      "tipo": "string",
+      "cwe_id": "string",
+      "severidad": "string",
+      "endpoint_afectado": "string",
+      "descripcion": "string",
+      "poc_payload": "string",
+      "remediacion_tecnica": {
+        "explicacion": "string",
+        "codigo_corregido": "string",
+        "codigo_vulnerable": "string"
+      }
+    }
+  ]
+}`;
 
 export const SAMPLE_DATA = {
   url: "https://elreydelchurrascon.cl/",
@@ -163,5 +182,14 @@ export const Icons = {
   ),
   Lock: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+  ),
+  Search: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+  ),
+  Info: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+  ),
+  Cpu: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" /></svg>
   )
 };

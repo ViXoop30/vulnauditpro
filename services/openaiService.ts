@@ -3,7 +3,7 @@ import { VulnerabilityReport } from "../types.ts";
 import { SYSTEM_INSTRUCTION, MOCK_REPORT } from "../constants.tsx";
 
 export const analyzeVulnerabilities = async (rawData: string, targetUrl: string): Promise<VulnerabilityReport> => {
-    const apiKey = (window as any).process?.env?.OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
 
     // Check if API key is valid
     if (!apiKey || apiKey.trim() === "" || apiKey.includes("PLACEHOLDER") || apiKey.includes("TU_OPENAI_KEY")) {
@@ -17,7 +17,7 @@ export const analyzeVulnerabilities = async (rawData: string, targetUrl: string)
     }
 
     try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch("/openai-api/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
